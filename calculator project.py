@@ -1,84 +1,117 @@
-from tkinter import*
-
-def btnClick(numbers):
-    global operator
-    operator=operator + str(numbers)
-    text_input.set(operator)
-
-def btnClearDisplay():
-    global operator
-    operator=""
-    text_input.set("")
-
-def btnEqualsinput():
-    global operator
-    sumup=str(eval(operator))
-    text_input.set(sumup)
-    operator=""
-
-cal =Tk()
-cal.title("ebisintei calculator")
-operator =""
-text_input =StringVar()
-cal.geometry = ("100x100")
+from tkinter import *
+from tkinter.messagebox import *
+import History.num_history
 
 
-txtDisplay = Entry(cal,font =("Chiller", 20,"bold"), textvariable = text_input, bd=20,
-                   insertwidth=1, bg="red",justify="right").grid(columnspan=4,rowspan=1)
+# important functions
+def key_board_click():
+    buttonFrame = textField.get()
+    print(buttonFrame)
 
-btn7=Button(cal,padx=8, pady=8, bd=8, fg="black",font=("Chiller", 20, "bold"),text="7",
-            bg="red",command=lambda:btnClick(7)).grid(row=1,column=0)
 
-btn8=Button(cal,padx=8, pady=8, bd=8, fg="black",font=("Chiller", 20, "bold"),
-            text="8", bg="red",command=lambda:btnClick(8)).grid(row=1,column=1)
+def clear():
+    ex = textField.get()
+    ex = ex[0:len(ex) - 2]
+    textField.delete(0, END)
+    textField.insert(0, ex)
 
-btn9=Button(cal,padx=8,pady=8, bd=8, fg="black",font=("Chiller", 20, "bold"),
-            text="9", bg="red", command=lambda :btnClick(9)).grid(row=1,column=2)
 
-Addition= Button(cal,padx=8, pady=8, bd=8, fg="black", font=("Chiller", 20, "bold" ),text="+",
-                 bg="red", command=lambda:btnClick('+')).grid(row=1, column=3)
+def all_clear():
+    textField.delete(0, END)
 
-#======================================================================================
 
-btn4=Button(cal,padx=8,pady=8, bd=8, fg="black",font=("Chiller", 20, "bold"),
-            text="4", bg="red", command=lambda :btnClick(4)).grid(row=2,column=0)
+font = ("verdana", 12, "bold")
 
-btn5=Button(cal,padx=8, pady=8, bd=8, fg="black",font=("Chiller", 20, "bold"),
-            text="5", bg="red",command=lambda:btnClick(5)).grid(row=2,column=1)
 
-btn6=Button(cal,padx=8,pady=8, bd=8, fg="black",font=("Chiller", 20, "bold"),
-            text="6", bg="red",command=lambda :btnClick(6)).grid(row=2,column=2)
+def click_button_function(event):
+    #print("Clicked",end='')
+    b = event.widget
+    text = b['text']
+    print(text)
 
-subtraction= Button(cal,padx=8, pady=8, bd=8, fg="black", font=("Chiller", 20, "bold" ),
-                    text="-", bg="red", command=lambda:btnClick('-')).grid(row=2, column=3)
+    if text == "=":
+        try:
+            ex = textField.get()
+            answer = eval(ex)
+            textField.delete(0, END)
+            textField.insert(0, answer)
+        except Exception as e:
+            print("Error..", e)
+            showerror("Error", e)
+        return
+    textField.insert(END, text)
 
-#==================================================================================
 
-btn1=Button(cal,padx=8, pady= 8,bd=8, fg="black",font=("Chiller", 20, "bold"),
-            text="1", bg="red", command=lambda:btnClick(1)).grid(row=3,column=0)
+# create a window
+cal = Tk()
+cal.title("Calculator")
+cal.geometry("300x370")
+cal.wm_iconbitmap("cal3.ico")
 
-btn2=Button(cal,padx=8, pady=8, bd=8, fg="black",font=("Chiller", 20, "bold"),
-            text="2", bg="red", command=lambda:btnClick(2)).grid(row=3,column=1)
+# picture label
+pic = PhotoImage(file="logofor.png")
+headingLabel = Label(cal, image=pic)
+headingLabel.pack(side=TOP, pady=10)
 
-btn3=Button(cal,padx=8, pady=8, bd=8, fg="black",font=("Chiller", 20, "bold"),
-            text="3", bg="red", command=lambda:btnClick(3)).grid(row=3,column=2)
+# heading label
+heading = Label(cal, text="Dennis Ebisintei", font=font, underline=1)
+heading.pack(side=TOP)
 
-Multiplication= Button(cal,padx=8, pady=8, bd=8, fg="black", font=("Chiller", 20, "bold" ),
-                       text="*", bg="red", command=lambda:btnClick('*')).grid(row=3, column=3)
+# text field
+textField = Entry(cal, font=font, justify=CENTER)
+textField.pack(side=TOP, pady=10, fill=X, padx=10)
 
-#==================================================================================
+# buttons
+buttonFrame = Frame(cal)
+buttonFrame.pack(side=TOP, pady=10)
 
-btn0=Button(cal,padx=8 ,pady=8, bd=8, fg="black",font=("Chiller", 20, "bold"),
-            text="0", bg="red",command=lambda:btnClick(0)).grid(row=4,column=0)
+# adding buttons
+temp = 1
+for i in range(0, 3):
+    for j in range(0, 3):
+        btn = Button(buttonFrame, text=str(temp), font=font, width=5, relief="ridge", activebackground="blue",
+                     activeforeground="white")
+        btn.grid(row=i, column=j)
+        temp = temp + 1
+        btn.bind("<Button-1>", click_button_function)
 
-btnClear=Button(cal,padx=8, pady=8, bd=8, fg="black",font=("chiller", 20, "bold"),
-                text="C", bg="red", command=btnClearDisplay).grid(row=4,column=1)
+zerobtn = Button(buttonFrame, text="0", font=font, width=5, relief="ridge", activebackground="blue")
+zerobtn.grid(row=3, column=0)
 
-btnEquals=Button(cal,padx=8, pady=8, bd=8 , fg="black",font=("Chiller", 20, "bold"),
-                 text="=", bg="red", command=btnEqualsinput).grid(row=4,column=2)
+dotbtn = Button(buttonFrame, text=".", font=font, width=5, relief="ridge", activebackground="blue")
+dotbtn.grid(row=3, column=1)
 
-Division= Button(cal,padx=8, pady=8, bd=8, fg="black", font=("Chiller", 20, "bold" ),
-                 text="/", bg="red", command=lambda:btnClick('/')).grid(row=4, column=3)
+equalbtn = Button(buttonFrame, text="=", font=font, width=5, relief="ridge", activebackground="blue")
+equalbtn.grid(row=3, column=2)
 
+plusBtn = Button(buttonFrame, text="+", font=font, width=5, relief="ridge", activebackground="blue")
+plusBtn.grid(row=0, column=3)
+
+SubtractBtn = Button(buttonFrame, text="-", font=font, width=5, relief="ridge", activebackground="blue")
+SubtractBtn.grid(row=1, column=3)
+
+mulBtn = Button(buttonFrame, text="*", font=font, width=5, relief="ridge", activebackground="blue")
+mulBtn.grid(row=2, column=3)
+
+divideBtn = Button(buttonFrame, text="/", font=font, width=5, relief="ridge", activebackground="blue")
+divideBtn.grid(row=3, column=3)
+
+clearBtn = Button(buttonFrame, text="C", font=font, width=11, relief="ridge", activebackground="blue", command=clear)
+clearBtn.grid(row=4, column=0, padx=3, pady=3, columnspan=2)
+
+allclearBtn = Button(buttonFrame, text="AC", font=font, width=11, relief="ridge", activebackground="blue",
+                     command=all_clear)
+allclearBtn.grid(row=4, column=2, padx=3, pady=3, columnspan=2)
+
+# binding all buttons
+zerobtn.bind("<Button-1>", click_button_function)
+dotbtn.bind("<Button-1>", click_button_function)
+equalbtn.bind("<Button-1>", click_button_function)
+plusBtn.bind("<Button-1>", click_button_function)
+mulBtn.bind("<Button-1>", click_button_function)
+divideBtn.bind("<Button-1>", click_button_function)
+clearBtn.bind("<Button-1>", click_button_function)
+allclearBtn.bind("<Button-1>", click_button_function)
+SubtractBtn.bind("<Button-1>", click_button_function)
 
 cal.mainloop()
